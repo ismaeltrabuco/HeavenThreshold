@@ -2,7 +2,17 @@ import streamlit as st
 import pandas as pd
 
 st.title("✨ Heaven Threshold ✨")
-st.write("Modelo cósmico de ascensão baseado na fórmula celestial.")
+st.write("A cosmic model of ascension based on the celestial formula.
+
+We developed a formula that blends solidarity and human warmth to evaluate aspirants aiming to ascend to a higher plane.
+
+Translated into the fields of business or personal growth, the model can assess the ability of a parameter, decision, or even a person to cross the threshold between two states:
+
+1 (ascension) → success, passage, achievement.
+
+-1 (non-passage) → learning, reevaluation, a different path.
+
+In our app, this process is represented as entry into a celestial event, but the same logic can be applied to various analytical contexts. 🚀.")
 
 uploaded_file = st.file_uploader("Envie seu dataset.csv", type="csv")
 
