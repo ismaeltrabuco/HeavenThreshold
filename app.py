@@ -1,32 +1,25 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 st.title("✨ Heaven Threshold ✨")
 st.write("Modelo cósmico de ascensão baseado na fórmula celestial.")
 
-# Upload do dataset
-file = st.file_uploader("Envie seu dataset.csv", type=["csv"])
+uploaded_file = st.file_uploader("Envie seu dataset.csv", type="csv")
 
-if file:
-    df = pd.read_csv(file)
-    st.subheader("Tabela Celestial")
-    st.dataframe(df)
+# Caso o usuário não envie nada, carrega o dataset padrão
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    st.info("Nenhum arquivo enviado. Usando dataset cósmico padrão 🌌")
+    df = pd.DataFrame({
+        "aspirante": ["Terra_1","Terra_2","Sirius_1","Nibiru_1","Venus_1","Terra_3","Sirius_2","Nibiru_2","Venus_2","Terra_4"],
+        "x": [0.3, -0.5, 0.8, -1.2, 1.5, -0.7, 0.9, -0.4, 1.1, 0.2],
+        "y": [1 if v + 0.82 > 0 else -1 for v in [0.3, -0.5, 0.8, -1.2, 1.5, -0.7, 0.9, -0.4, 1.1, 0.2]]
+    })
 
-    # Gráfico de distribuição
-    st.subheader("Distribuição por origem")
-    fig, ax = plt.subplots()
-    df['origem'].value_counts().plot(kind="bar", ax=ax)
-    st.pyplot(fig)
+st.subheader("🔭 Dataset")
+st.dataframe(df)
 
-    # Gráfico de quem passa e não passa
-    st.subheader("Ascensão (y=1) vs Reprovação (y=-1)")
-    fig2, ax2 = plt.subplots()
-    df['y'].value_counts().plot(kind="pie", autopct='%1.1f%%', ax=ax2)
-    ax2.set_ylabel("")
-    st.pyplot(fig2)
-
-    # Comparação por origem
-    st.subheader("Taxa de ascensão por origem")
-    taxa = df.groupby("origem")['y'].apply(lambda x: (x==1).mean())
-    st.bar_chart(taxa)
+# Visualização básica
+st.subheader("📊 Distribuição dos aspirantes")
+st.bar_chart(df["x"])
