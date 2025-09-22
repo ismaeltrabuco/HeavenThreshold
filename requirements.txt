@@ -3,3 +3,5 @@ pandas
 numpy
 scikit-learn
 matplotlib
+pymc==5.15.0
+arviz==0.18.0
