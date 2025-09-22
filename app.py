@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 st.title("✨ Heaven Threshold ✨")
-st.write("A cosmic model of ascension based on the celestial formula.
+st.write( "A cosmic model of ascension based on the celestial formula.
 
 We developed a formula that blends solidarity and human warmth to evaluate aspirants aiming to ascend to a higher plane.
 
