@@ -10,6 +10,13 @@ Um **modelo cósmico de ascensão** inspirado na fórmula celestial.
 
 O modelo avalia aspirantes com base em **traços humanos e sociais** — amor, perdão, apoio familiar, vínculos afetivos e escolhas de vida.  
 O objetivo é calcular a **probabilidade de ascensão (y=1)** e sugerir **intervenções prioritárias**. 🚀
+
+---
+
+### 🌌 Nossos Pilares
+- **Agnóstico** → podemos trocar os traços (“amar”, “perdoar”, “apoio familiar”) por qualquer outro conjunto de features (financeiras, de saúde, de comportamento).  
+- **Probabilístico** → não é só sim/não, mas também dá a *probabilidade de ascensão*.  
+- **Explicável** → o peso das features vira uma forma de interpretar “quais energias contam mais” no processo.  
 """)
 
 # Upload
@@ -53,7 +60,8 @@ df["prob_ascensao"] = model.predict_proba(X)[:,1]
 # ===============================
 # Gráfico de importância das features
 # ===============================
-st.subheader("📊 Importância das features")
+st.subheader("📊 Importância das features (Explicabilidade)")
+
 coef_df = pd.DataFrame({
     "feature": features,
     "peso": model.coef_[0]
@@ -68,7 +76,7 @@ st.pyplot(fig)
 # ===============================
 # Sugestões de intervenção
 # ===============================
-st.subheader("💡 Sugestões de Intervenção")
+st.subheader("💡 Sugestões de Intervenção (Ação prática)")
 
 def sugerir(row):
     if row["homicidio"] == 1:
@@ -89,5 +97,5 @@ st.dataframe(df[["aspirante","prob_ascensao","intervencao"]])
 # ===============================
 # Visualização final
 # ===============================
-st.subheader("🌌 Distribuição de probabilidades de ascensão")
+st.subheader("🌌 Distribuição de probabilidades de ascensão (Probabilístico)")
 st.bar_chart(df.set_index("aspirante")["prob_ascensao"])
