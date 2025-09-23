@@ -1,101 +1,59 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
 
-st.title("✨ Heaven Threshold ✨")
-st.write("""
-Um **modelo cósmico de ascensão** inspirado na fórmula celestial.
+st.title("🌌 Heaven Threshold — Modelo Agnóstico")
 
-O modelo avalia aspirantes com base em **traços humanos e sociais** — amor, perdão, apoio familiar, vínculos afetivos e escolhas de vida.  
-O objetivo é calcular a **probabilidade de ascensão (y=1)** e sugerir **intervenções prioritárias**. 🚀
+uploaded_file = st.file_uploader("Envie seu CSV", type=["csv"])
 
----
-
-### 🌌 Nossos Pilares
-- **Agnóstico** → podemos trocar os traços (“amar”, “perdoar”, “apoio familiar”) por qualquer outro conjunto de features (financeiras, de saúde, de comportamento).  
-- **Probabilístico** → não é só sim/não, mas também dá a *probabilidade de ascensão*.  
-- **Explicável** → o peso das features vira uma forma de interpretar “quais energias contam mais” no processo.  
-""")
-
-# Upload
-uploaded_file = st.file_uploader("📂 Envie seu dataset.csv", type="csv")
-
-# Dataset padrão com novas features
-if uploaded_file is not None:
+if uploaded_file:
     df = pd.read_csv(uploaded_file)
-else:
-    st.info("Nenhum arquivo enviado. Usando dataset cósmico padrão 🌌")
-    df = pd.DataFrame({
-        "aspirante": ["Terra_1","Terra_2","Sirius_1","Nibiru_1","Venus_1",
-                      "Terra_3","Sirius_2","Nibiru_2","Venus_2","Terra_4"],
-        "x": [0.3, -0.5, 0.8, -1.2, 1.5, -0.7, 0.9, -0.4, 1.1, 0.2],
-        "ama": [1,0,1,0,1,0,1,0,1,1],
-        "perdoou": [0,1,1,0,1,0,1,1,1,0],
-        "homicidio": [0,0,0,1,0,0,0,0,0,0],
-        "family_support": [1,0,1,0,1,0,1,0,1,1],
-        "has_partner": [1,0,1,0,1,0,0,1,1,0],
-        "has_children": [0,0,1,0,1,0,1,0,0,1],
-    })
-    df["y"] = [1 if v + 0.82 > 0 else -1 for v in df["x"]]
+    st.write("📊 Dados carregados:", df.head())
 
-# Mostra dataset
-st.subheader("🔭 Dataset")
-st.dataframe(df)
+    # Usuário escolhe qual é a coluna alvo
+    target_col = st.selectbox("Escolha a variável alvo (y)", df.columns)
 
-# ===============================
-# Modelo logístico simples
-# ===============================
-features = ["x","ama","perdoou","homicidio","family_support","has_partner","has_children"]
-X = df[features]
-y = (df["y"] == 1).astype(int)
+    # Features são todas as outras colunas numéricas
+    features = [col for col in df.columns if col != target_col]
 
-model = LogisticRegression()
-model.fit(X, y)
-
-# Probabilidades preditas
-df["prob_ascensao"] = model.predict_proba(X)[:,1]
-
-# ===============================
-# Gráfico de importância das features
-# ===============================
-st.subheader("📊 Importância das features (Explicabilidade)")
-
-coef_df = pd.DataFrame({
-    "feature": features,
-    "peso": model.coef_[0]
-}).sort_values(by="peso", ascending=False)
-
-fig, ax = plt.subplots(figsize=(6,4))
-ax.barh(coef_df["feature"], coef_df["peso"], color="skyblue")
-ax.set_xlabel("Peso (coeficiente logístico)")
-ax.set_title("Importância relativa das features")
-st.pyplot(fig)
-
-# ===============================
-# Sugestões de intervenção
-# ===============================
-st.subheader("💡 Sugestões de Intervenção (Ação prática)")
-
-def sugerir(row):
-    if row["homicidio"] == 1:
-        return "⚠️ Prevenção de violência urgente"
-    elif row["family_support"] == 0:
-        return "👨‍👩‍👧 Fortalecer apoio familiar"
-    elif row["perdoou"] == 0:
-        return "💙 Trabalhar perdão"
-    elif row["ama"] == 0:
-        return "💞 Incentivar amar"
+    if len(features) == 0:
+        st.error("Não há features numéricas suficientes para treinar.")
     else:
-        return "✨ Manter equilíbrio cósmico"
+        X = df[features]
+        y = df[target_col]
 
-df["intervencao"] = df.apply(sugerir, axis=1)
+        # Divide os dados
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.3, random_state=42
+        )
 
-st.dataframe(df[["aspirante","prob_ascensao","intervencao"]])
+        # Pipeline genérico: normalização + modelo
+        pipe = Pipeline([
+            ("scaler", StandardScaler()),
+            ("model", LogisticRegression(max_iter=200))
+        ])
 
-# ===============================
-# Visualização final
-# ===============================
-st.subheader("🌌 Distribuição de probabilidades de ascensão (Probabilístico)")
-st.bar_chart(df.set_index("aspirante")["prob_ascensao"])
+        # Treina
+        pipe.fit(X_train, y_train)
+
+        # Avalia
+        score = pipe.score(X_test, y_test)
+        st.write(f"✅ Acurácia no teste: {score:.2f}")
+
+        # Coeficientes para legenda genérica
+        if hasattr(pipe.named_steps["model"], "coef_"):
+            coefs = pipe.named_steps["model"].coef_[0]
+            legenda = {f"feat_{i}": f"{features[i]} (peso={coefs[i]:.2f})"
+                       for i in range(len(features))}
+            st.write("📌 Legenda genérica das features:")
+            st.json(legenda)
+
+        # Relatório
+        y_pred = pipe.predict(X_test)
+        st.text("📑 Relatório de classificação:")
+        st.text(classification_report(y_test, y_pred))
