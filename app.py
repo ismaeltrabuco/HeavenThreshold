@@ -8,7 +8,15 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
-st.title("🌌 Heaven Threshold — Modelo Híbrido e Explicável")
+st.title("🌌 Heaven Threshold - Agnóstico e Positivo")
+st.markdown("""
+In business, it's easy to get lost in numbers and strategies—but what truly matters goes beyond profit.  
+
+We trained a model that can predict what truly matters to those accepted in heaven.  
+We're not judges—yet, for sure—but we rely on common sense, and when that fails, on right and justice itself, using the accumulated knowledge of past eras, now accessible with AI and Big Data, all in one click.  
+
+Use your own data to reflect: what really matters in your numbers? Are your metrics aligned with growth **and** conscience? Have you ever wondered?  
+""")
 
 uploaded_file = st.file_uploader("Envie seu CSV", type=["csv"])
 
